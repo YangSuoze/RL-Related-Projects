@@ -22,3 +22,8 @@ tensorboard --logdir=runs --port=6007 --host=0.0.0.0
 ![gen_loss图](imgs/gen_loss.png)
 ### 生成的虚假图像和真实图像对比
 ![生成器生成的图和真实的实验图](imgs/fake_real_res.png)
+## CartPole小车摆动实验
+### loss变化
+![loss变化](imgs/cartpole_loss.png)
+### 平均奖励和奖励下限的变化
+![平均奖励和奖励下限的变化](imgs/cartpole_res.png)
