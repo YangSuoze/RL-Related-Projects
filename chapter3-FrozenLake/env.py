@@ -46,9 +46,16 @@ class Env:
     def __init__(self):
         # 0是普通位置，1是障碍物，2是奖励点
         self.observation = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        self.obstacles = [7, 11, 12]
+        self.obstacles = [5, 7, 11, 12]
         self.target_index = 15
         self.done = False
+
+    def replace_action(self, action):
+        action_map = {0: [3, 2], 1: [2, 3], 2: [1, 0], 3: [0, 1]}
+        if random.random() < 0.66:
+            replace_one = random.sample(action_map[action], 1)[0]
+            return replace_one
+        return action
 
     def reset(self):
         self.done = False
@@ -56,6 +63,7 @@ class Env:
         return self.observation, ""
 
     def step(self, action):
+        action = self.replace_action(action)
         cur_index = self.observation.index(1)
         if action == 0:
             # top
@@ -74,13 +82,11 @@ class Env:
             if next_index % 4 < cur_index % 4:
                 next_index = -1
         if next_index == self.target_index:
-            self.observation = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-            self.observation[next_index] = 1
             reward = 8
+            self.observation = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
             self.done = True
         elif next_index < 0 or next_index > 15:
             reward = 0
-            self.done = False
         elif next_index in self.obstacles:
             reward = -1
             self.done = True
