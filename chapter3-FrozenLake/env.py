@@ -46,14 +46,16 @@ class Env:
     def __init__(self):
         # 0是普通位置，1是障碍物，2是奖励点
         self.observation = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        self.obstacles = [5, 7, 11, 12]
+        self.obstacles = [3, 5, 7, 11, 12]
         self.target_index = 15
+        self.action_space = 4
+        self.observation_space = 16
         self.done = False
 
     def replace_action(self, action):
         action_map = {0: [3, 2], 1: [2, 3], 2: [1, 0], 3: [0, 1]}
         if random.random() < 0.66:
-            replace_one = random.sample(action_map[action], 1)[0]
+            replace_one = random.choice(action_map[action])
             return replace_one
         return action
 
@@ -81,19 +83,21 @@ class Env:
             next_index = cur_index + 1
             if next_index % 4 < cur_index % 4:
                 next_index = -1
+
         if next_index == self.target_index:
-            reward = 8
+            reward = 1
             self.observation = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
             self.done = True
         elif next_index < 0 or next_index > 15:
             reward = 0
         elif next_index in self.obstacles:
-            reward = -1
+            reward = 0
             self.done = True
             self.observation = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             self.observation[next_index] = 1
         else:
             reward = get_distance(cur_index, next_index, self.target_index)
+            reward = 0
             self.observation = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             self.observation[next_index] = 1
         return self.observation, reward, self.done, "", ""
@@ -103,7 +107,7 @@ if __name__ == "__main__":
     env = Env()
     obs, _ = env.reset()
     while True:
-        action = random.sample([0, 1, 2, 3], 1)[0]
+        action = random.choice([0, 1, 2, 3])
         nxt_obs, r, is_done, _, _ = env.step(action)
         print(action, nxt_obs, r, is_done)
         if is_done:
